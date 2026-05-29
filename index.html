@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- ── Meta ── -->
+  <meta charset="UTF-8" />
+  <meta property="og:title" content="Calculadora Financeira" />
+  <meta property="og:description" content="Calcule porcentagem, juros, descontos e regra de três de forma simples." />
+  <meta property="og:type" content="website" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="description" content="Calculadora financeira online gratuita com porcentagem, juros simples, juros compostos, desconto e regra de três." />
+  <meta name="keywords" content="calculadora financeira, juros compostos, porcentagem, desconto, regra de três" />
+  <meta name="author" content="João Maciel" />
+
+  <title>Calculadora Financeira</title>
+
+  <!-- ── Fontes ── -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- ── Estilos ── -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/png" href="assets/favicon.png"/>
+</head>
+<body>
+
+  <!-- Botões flutuantes -->
+<div class="floating-controls">
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema">🌙</button>
+  <button class="floating-about" onclick="openAbout()" aria-label="Abrir seção Sobre">👨‍💻 Sobre</button>
+</div>
+  <!-- Orbs de fundo -->
+  <div class="glow-orb a"></div>
+  <div class="glow-orb b"></div>
+  <main class="wrapper">
+
+    <!-- ── Cabeçalho ── -->
+    <header>
+      <h1>Calculadora <span>Financeira</span></h1>
+      <p>Porcentagem · Juros · Descontos · Regra de Três</p>
+    </header>
+
+    <!-- ── Abas de navegação ── -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('pct', this)">
+        <span class="icon">%</span> Porcentagem
+      </button>
+      <button class="tab-btn" onclick="switchTab('js', this)">
+        <span class="icon">📈</span> Juros Simples
+      </button>
+      <button class="tab-btn" onclick="switchTab('jc', this)">
+        <span class="icon">📉</span> Juros Compostos
+      </button>
+      <button class="tab-btn" onclick="switchTab('desc', this)">
+        <span class="icon">🏷️</span> Desconto
+      </button>
+      <button class="tab-btn" onclick="switchTab('r3', this)">
+        <span class="icon">⚖️</span> Regra de Três
+      </button>
+    </div>
+
+    <!-- ════════════════ PORCENTAGEM ════════════════ -->
+    <div id="panel-pct" class="panel active">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon green">%</div>
+          <div>
+            <div class="card-title">Porcentagem</div>
+            <div class="card-desc">Três tipos de cálculo percentual</div>
+          </div>
+        </div>
+
+        <div class="subtype-row">
+          <button class="sub-btn active" onclick="setPct(1, this)" aria-pressed="true">% de um valor</button>
+          <button class="sub-btn" onclick="setPct(2, this)">Quanto % representa</button>
+          <button class="sub-btn" onclick="setPct(3, this)">Valor com aumento/desconto</button>
+        </div>
+
+        <!-- Tipo 1: calcular % de um valor -->
+        <div id="pct1">
+          <div class="fields">
+            <div class="field">
+              <label>Valor Total</label>
+              <input id="pct1-valor" type="number" placeholder="ex: 200" aria-label="Valor total" />
+            </div>
+            <div class="field">
+              <label>Taxa (%)</label>
+              <input id="pct1-taxa" type="number" placeholder="ex: 15" />
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcPct(1)">Calcular</button>
+        </div>
+
+        <!-- Tipo 2: quanto % um valor representa -->
+        <div id="pct2" style="display:none">
+          <div class="fields">
+            <div class="field">
+              <label>Valor Parcial</label>
+              <input id="pct2-parte" type="number" placeholder="ex: 30" />
+            </div>
+            <div class="field">
+              <label>Valor Total</label>
+              <input id="pct2-total" type="number" placeholder="ex: 200" />
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcPct(2)">Calcular</button>
+        </div>
+
+        <!-- Tipo 3: valor com aumento ou desconto -->
+        <div id="pct3" style="display:none">
+          <div class="fields">
+            <div class="field">
+              <label>Valor Original</label>
+              <input id="pct3-valor" type="number" placeholder="ex: 200" />
+            </div>
+            <div class="field">
+              <label>Taxa — positivo aumento, negativo desconto</label>
+              <input id="pct3-taxa" type="number" placeholder="ex: 10 ou -10" />
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcPct(3)">Calcular</button>
+        </div>
+
+        <div id="pct-error" class="error-msg">⚠️ Preencha todos os campos com valores válidos.</div>
+        <div id="pct-result" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════ JUROS SIMPLES ════════════════ -->
+    <div id="panel-js" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">📈</div>
+          <div>
+            <div class="card-title">Juros Simples</div>
+            <div class="card-desc">J = C × i × t</div>
+          </div>
+        </div>
+
+        <div class="fields three">
+          <div class="field">
+            <label>Capital Inicial (R$)</label>
+            <input id="js-capital" type="number" inputmode="decimal" min="0" step="0.01" placeholder="ex: 1000" />
+          </div>
+          <div class="field">
+            <label>Taxa (% ao período)</label>
+            <input id="js-taxa" type="number" placeholder="ex: 2" />
+          </div>
+          <div class="field">
+            <label>Tempo (períodos)</label>
+            <input id="js-tempo" type="number" placeholder="ex: 6" />
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calcJS()">Calcular</button>
+        <div id="js-error" class="error-msg">⚠️ Preencha todos os campos com valores válidos.</div>
+        <div id="js-result" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════ JUROS COMPOSTOS ════════════════ -->
+    <div id="panel-jc" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon orange">📉</div>
+          <div>
+            <div class="card-title">Juros Compostos</div>
+            <div class="card-desc">M = C × (1 + i)ᵗ</div>
+          </div>
+        </div>
+
+        <div class="fields three">
+          <div class="field">
+            <label>Capital Inicial (R$)</label>
+            <input id="jc-capital" type="number" placeholder="ex: 1000" />
+          </div>
+          <div class="field">
+            <label>Taxa (% ao período)</label>
+            <input id="jc-taxa" type="number" placeholder="ex: 2" />
+          </div>
+          <div class="field">
+            <label>Tempo (períodos)</label>
+            <input id="jc-tempo" type="number" placeholder="ex: 6" />
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calcJC()">Calcular</button>
+        <div id="jc-error" class="error-msg">⚠️ Preencha todos os campos com valores válidos.</div>
+        <div id="jc-result" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════ DESCONTO ════════════════ -->
+    <div id="panel-desc" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon teal">🏷️</div>
+          <div>
+            <div class="card-title">Desconto</div>
+            <div class="card-desc">Comercial e Racional</div>
+          </div>
+        </div>
+
+        <div class="subtype-row">
+          <button class="sub-btn active" onclick="setDesc(1, this)">Desconto Comercial</button>
+          <button class="sub-btn" onclick="setDesc(2, this)">Desconto Racional</button>
+        </div>
+
+        <div class="fields">
+          <div class="field">
+            <label>Valor Original (R$)</label>
+            <input id="desc-valor" type="number" placeholder="ex: 500" />
+          </div>
+          <div class="field">
+            <label>Taxa de Desconto (%)</label>
+            <input id="desc-taxa" type="number" placeholder="ex: 10" />
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calcDesc()">Calcular</button>
+        <div id="desc-error" class="error-msg">⚠️ Preencha todos os campos com valores válidos.</div>
+        <div id="desc-result" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════ REGRA DE TRÊS ════════════════ -->
+    <div id="panel-r3" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon red">⚖️</div>
+          <div>
+            <div class="card-title">Regra de Três</div>
+            <div class="card-desc">Simples e Composta</div>
+          </div>
+        </div>
+
+        <div class="subtype-row">
+          <button class="sub-btn active" onclick="setR3(1, this)">Simples</button>
+          <button class="sub-btn" onclick="setR3(2, this)">Composta</button>
+        </div>
+
+        <!-- Simples -->
+        <div id="r3-simple">
+          <p style="font-size:.85rem; color:var(--muted); margin-bottom:18px;">
+            Se <b style="color:var(--text)">A</b> está para <b style="color:var(--text)">B</b>,
+            então <b style="color:var(--text)">C</b> está para <b style="color:var(--accent)">X</b>
+          </p>
+          <div class="fields three">
+            <div class="field"><label>Valor A</label><input id="r3s-a" type="number" placeholder="ex: 5" /></div>
+            <div class="field"><label>Valor B</label><input id="r3s-b" type="number" placeholder="ex: 100" /></div>
+            <div class="field"><label>Valor C</label><input id="r3s-c" type="number" placeholder="ex: 8" /></div>
+          </div>
+          <button class="calc-btn" onclick="calcR3(1)">Calcular X</button>
+        </div>
+
+        <!-- Composta -->
+        <div id="r3-comp" style="display:none">
+          <p style="font-size:.85rem; color:var(--muted); margin-bottom:18px;">
+            Duas grandezas afetando um resultado.
+            <em>Ex: 5 máquinas → 100 peças em 2 dias</em>
+          </p>
+          <div class="fields four">
+            <div class="field"><label>Grandeza 1 — A</label><input id="r3c-a1" type="number" placeholder="ex: 5" /></div>
+            <div class="field"><label>Grandeza 1 — B</label><input id="r3c-b1" type="number" placeholder="ex: 8" /></div>
+            <div class="field"><label>Grandeza 2 — A</label><input id="r3c-a2" type="number" placeholder="ex: 2" /></div>
+            <div class="field"><label>Grandeza 2 — B</label><input id="r3c-b2" type="number" placeholder="ex: 3" /></div>
+          </div>
+          <div class="fields single" style="margin-top:14px">
+            <div class="field">
+              <label>Resultado Conhecido</label>
+              <input id="r3c-res" type="number" placeholder="ex: 100 peças" />
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcR3(2)">Calcular X</button>
+        </div>
+
+        <div id="r3-error" class="error-msg">⚠️ Preencha todos os campos com valores válidos.</div>
+        <div id="r3-result" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════ SOBRE ════════════════ -->
+    <div id="panel-sobre" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon teal">👨‍💻</div>
+          <div>
+            <div class="card-title">Sobre o Projeto</div>
+            <div class="card-desc">Objetivo e Desenvolvimento do Sistema</div>
+          </div>
+        </div>
+
+        <div class="about-content">
+          <div class="about-section">
+            <h3>🎯 Objetivo</h3>
+            <p>
+              Este projeto foi desenvolvido para auxiliar estudantes da área administrativa e
+              financeira em cálculos do dia a dia, tornando processos matemáticos mais rápidos
+              e acessíveis.
+            </p>
+            <p>
+              A plataforma busca simplificar o aprendizado exibindo a fórmula de cada cálculo:
+              porcentagem, juros, descontos e regra de três.
+            </p>
+          </div>
+
+          <div class="about-section">
+            <h3>💡 Motivação</h3>
+            <p>
+              A ideia surgiu durante os estudos no curso técnico, ao perceber a dificuldade
+              de muitos colegas em cálculos financeiros.
+            </p>
+            <p>
+              Unir programação, design e educação para criar uma ferramenta útil mostra que
+              a tecnologia pode facilitar processos em qualquer área.
+            </p>
+          </div>
+
+          <div class="about-section">
+            <h3>🚀 Tecnologias Utilizadas</h3>
+            <div class="tech-grid">
+              <span>HTML5</span>
+              <span>CSS3</span>
+              <span>JavaScript</span>
+              <span>UI/UX</span>
+              <span>Design Responsivo</span>
+            </div>
+          </div>
+
+          <div class="about-section">
+            <h3>👨‍💻 Desenvolvedor</h3>
+            <p>
+              Projeto desenvolvido por <strong>João Maciel</strong>,
+              estudante e Desenvolvedor Full Stack.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Rodapé ── -->
+    <footer>
+      <p>© 2026 <strong>João Maciel</strong></p>
+      <p>Plataforma desenvolvida para auxiliar estudantes e profissionais em cálculos financeiros.</p>
+      <div class="footer-links">
+        <a href="https://github.com/JoaoMaciell">GitHub</a>
+        <a href="https://www.linkedin.com/in/joaopmacielb/">LinkedIn</a>
+        <a href="#">Contato</a>
+      </div>
+    </footer>
+
+  </main><!-- /wrapper -->
+
+  <!-- ── JavaScript ── -->
+  <script src="js/main.js"></script>
+
+</body>
+</html>
